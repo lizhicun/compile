@@ -176,7 +176,8 @@ int main(int argc, char* argv[]) {
 gcc test5.c -o test5 && nm test5
 ldd test5
   静态库是链接器通过静态链接将其和其它目标文件合并生成可执行文件的，如下图一所示，而静态库只不过是将多个目标文件进行了打包，在链接时只取静态库中所用到的目标文件，因此，你可以将静态链接想象成如下图2所示的过程。  
-  
+  https://github.com/lizhicun/compile/blob/master/src/pic1.png
+ 
   【图1】【图2】
   静态链接下可执行文件的生成  
   
