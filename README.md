@@ -176,18 +176,17 @@ int main(int argc, char* argv[]) {
 gcc test5.c -o test5 && nm test5
 ldd test5
   静态库是链接器通过静态链接将其和其它目标文件合并生成可执行文件的，如下图一所示，而静态库只不过是将多个目标文件进行了打包，在链接时只取静态库中所用到的目标文件，因此，你可以将静态链接想象成如下图2所示的过程。  
-  https://github.com/lizhicun/compile/blob/master/src/pic1.png
- 
-  【图1】【图2】
+ ![Image text](https://github.com/lizhicun/compile/blob/master/src/pic1.png)
+ ![Image text](https://github.com/lizhicun/compile/blob/master/src/pic2.png)
   静态链接下可执行文件的生成  
   
-   【图3】
+ ![Image text](https://github.com/lizhicun/compile/blob/master/src/pic2.png)
   使用静态库时，静态库的代码段和数据段都会直接打包copy到可执行文件当中，使用静态库无疑会增大可执行文件的大小，同时如果程序都需要某种类型的静态库，比如libc，使用静态链接的话，每个可执行文件当中都会有一份同样的libc代码和数据的拷贝，如图所示  
   
-    【图4】
+  ![Image text](https://github.com/lizhicun/compile/blob/master/src/pic2.png)
   动态库允许使用该库的可执行文件仅仅包含对动态库的引用而无需将该库拷贝到可执行文件当中。也就是说，同静态库进行整体拷贝的方式不同，对于动态库的使用仅仅需要可执行文件当中包含必要的信息 
   
-    【图5】
+  ![Image text](https://github.com/lizhicun/compile/blob/master/src/pic2.png)
   静态库其实是在编译期间(Compile time)链接使用的，动态链接可以在两种情况下被链接使用，分别是load-time dynamic linking(加载时动态链接) 以及 run-time dynamic linking(运行时动态链接) 
   
   1.load-time dynamic linking(加载时动态链接)
@@ -200,7 +199,7 @@ ldd test5
   动态链接下可执行文件的生成  
   在动态链接下，链接器并不是将动态库中的代码和数据拷贝到可执行文件中，而是将动态库的必要信息写入了可执行文件，这样当可执行文件在加载时就可以根据此信息进行动态链接了。如图所示，在动态链接下，可执行文件当中会新增两段，即dynamic段以及GOT（Global offset table）段，这两段内容就是是我们之前所说的必要信息。  
   
-    【图6】
+  ![Image text](https://github.com/lizhicun/compile/blob/master/src/pic2.png)
 
   动态库VS静态库  
   在计算机的历史当中，最开始程序只能静态链接，但是人们很快发现，静态链接生成的可执行文件存在磁盘空间浪费问题，因为对于每个程序都需要依赖的libc库，在静态链接下每个可执行文件当中都有一份libc代码和数据的拷贝，为解决该问题才提出动态库。  
@@ -215,20 +214,20 @@ ldd test5
 编译器，是把一种语言（通常是高级语言）转换为另一种语言（通常是低级语言）的程序。  
 
 大多数编译器由三部分组成：   
-【图7】
+![Image text](https://github.com/lizhicun/compile/blob/master/src/pic2.png)
 前端（Frontend）：负责解析源码，检查错误，生成抽象语法树（AST），并把 AST 转化成类汇编中间代码；  
 优化器（Optimizer）：对中间代码进行架构无关的优化，提高运行效率，减少代码体积，例如删除 if (0) 无效分支；  
 后端（Backend）：把中间代码转换成目标平台的机器码。  
 
 Clang/LLVM 编译器是开源的，我们可以从官网下载其源码，根据上述编译过程，在每个编译阶段埋点输出耗时，生成定制化的编译器。clang 增加 -ftime-trace 选项，编译时生成 Chrome（chrome://tracing） JSON 格式的耗时报告，列出所有阶段的耗时。  
 
-【图8】
+![Image text](https://github.com/lizhicun/compile/blob/master/src/pic2.png)
 1）编译器前端处理（Frontend）耗时 7,659.2s，占整体 87%；  
 2）而前端处理下头文件处理（Source）耗时 7,146.2s，占整体 71.9%！  
 猜测：头文件嵌套严重，每个源文件都要引入几十个甚至几百个头文件，每个头文件源码要做预处理、词法分析、语法分析等等。实际上源文件不需要使用某些头文件里的定义（如 class、function），所以编译时间才那么长。  
 
 下图统计所有头文件被引用次数、总处理时间、头文件分组（指一个耗时顶部的头文件所引用到的所有子头文件的集合）。  
-【图9】
+![Image text](https://github.com/lizhicun/compile/blob/master/src/pic2.png)
 Header1 处理时间 1187.7s，被引用 2,304 次；  
 Header2 处理时间 1,124.9s，被引用 3,831 次；  
 后面 Header3～10 都是被 Header1 引用。  
